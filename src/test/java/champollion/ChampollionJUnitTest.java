@@ -1,17 +1,23 @@
 package champollion;
 
 import org.junit.jupiter.api.*;
+
+import java.util.Date;
+
+import static champollion.TypeIntervention.TD;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ChampollionJUnitTest {
 	Enseignant untel;
 	UE uml, java;
+	Intervention intervention;
 		
 	@BeforeEach
 	public void setUp() {
 		untel = new Enseignant("untel", "untel@gmail.com");
 		uml = new UE("UML");
-		java = new UE("Programmation en java");		
+		java = new UE("Programmation en java");
+		intervention = new Intervention(uml,TD,new Date(01,03,2021),3,false,13);
 	}
 	
 
@@ -35,6 +41,22 @@ public class ChampollionJUnitTest {
 		assertEquals(10 + 20, untel.heuresPrevuesPourUE(uml),
                          "L'enseignant doit maintenant avoir 30 heures prévues pour l'UE 'uml'");		
 		
+	}
+
+	@Test
+	public void testSousService() {
+		untel.ajouteEnseignement(uml, 0, 10, 0);
+		assertEquals(true, untel.enSousService(),
+				"Un enseignant ayant moins de 192 heures de prévues doit être en sous service");
+	}
+
+	@Test
+	public void testInterventionResteAPlanifier() {
+		untel.ajouteIntervention(intervention);
+		untel.ajouteEnseignement(uml, 0, 10, 0);
+
+		assertEquals(7, untel.resteAPlanifier(uml,TD),
+				"Il doit rester 7 heures à planifier après cette intervention");
 	}
 	
 }

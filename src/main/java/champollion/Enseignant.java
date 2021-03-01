@@ -1,11 +1,16 @@
 package champollion;
 
+import java.util.ArrayList;
+
 public class Enseignant extends Personne {
 
-    // TODO : rajouter les autres méthodes présentes dans le diagramme UML
+    private ArrayList<ServicePrevu> listeService;
+    private ArrayList<Intervention> listeIntervention;
 
     public Enseignant(String nom, String email) {
         super(nom, email);
+        this.listeService = new ArrayList<>();
+        this.listeIntervention = new ArrayList<>();
     }
 
     /**
@@ -17,8 +22,25 @@ public class Enseignant extends Personne {
      *
      */
     public int heuresPrevues() {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        double total=0;
+        if (listeService.isEmpty()) {
+            return 0;
+        }
+
+        for (int i=0; i<listeService.size();i++) {
+            total = (listeService.get(i).getVolumeCM()*1.5) + (listeService.get(i).getVolumeTD()) + (listeService.get(i).getVolumeTP()*0.75) + total;
+        }
+        int totalInt = (int) total;
+        return totalInt;
+    }
+
+    public boolean enSousService() {
+        if (this.heuresPrevues() < 192) {
+            return true;
+        }
+        else {
+            return true;
+        }
     }
 
     /**
@@ -31,8 +53,14 @@ public class Enseignant extends Personne {
      *
      */
     public int heuresPrevuesPourUE(UE ue) {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        double total=0;
+        for (int i=0; i<listeService.size();i++) {
+            if (listeService.get(i).getUe().getIntitule() == ue.getIntitule()) {
+                total = (listeService.get(i).getVolumeCM() * 1.5) + (listeService.get(i).getVolumeTD()) + (listeService.get(i).getVolumeTP() * 0.75) + total;
+            }
+        }
+        int totalInt = (int) total;
+        return totalInt;
     }
 
     /**
@@ -44,8 +72,23 @@ public class Enseignant extends Personne {
      * @param volumeTP le volume d'heures de TP
      */
     public void ajouteEnseignement(UE ue, int volumeCM, int volumeTD, int volumeTP) {
-        // TODO: Implémenter cette méthode
-        throw new UnsupportedOperationException("Pas encore implémenté");
+        ServicePrevu service = new ServicePrevu(ue, volumeCM, volumeTD, volumeTP);
+        this.listeService.add(service);
+    }
+
+    public void ajouteIntervention (Intervention intervention) {
+        this.listeIntervention.add(intervention);
+    }
+
+    public int resteAPlanifier(UE ue, TypeIntervention type) {
+        int total = this.heuresPrevuesPourUE(ue);
+        int totalIntervention = 0;
+        for (int i=0; i<listeIntervention.size();i++) {
+            if (listeIntervention.get(i).getUe().getIntitule() == ue.getIntitule()) {
+                totalIntervention = listeIntervention.get(i).getDuree()+totalIntervention;
+            }
+        }
+        return total - totalIntervention;
     }
 
 }
